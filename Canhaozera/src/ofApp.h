@@ -4,7 +4,6 @@
 #include <vector>
 #include "MathVinicius\AffineTransform.h"
 class Tank;
-class Physics;
 
 class ofApp : public ofBaseApp{
 
@@ -27,5 +26,4 @@ class ofApp : public ofBaseApp{
 
 		std::vector<Tank*> _tanks;
 		math::Matrix3 _world;
-		Physics* p;
 };

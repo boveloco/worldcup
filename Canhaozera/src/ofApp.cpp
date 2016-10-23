@@ -2,14 +2,9 @@
 #include <iostream>
 
 #include "Tank\Tank.h"
-#include "Tank\Bullet.h"
-
-#include "Physics\Physics.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	this->p = new Physics();
-
 	_world = math::Matrix3(1, 0, 0,
 						   0, 1, 0,
 						   ofGetWidth() / 2, ofGetHeight() / 2, 1);
@@ -35,11 +30,8 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key) {	
-	if (key == 'c') 
-		_tanks[0]->_cannon->instantiate(new Bullet(_tanks[0]->getPos()));
-	if (key == 'd')
-		p->_objects.push_back(_tanks[0]);
+void ofApp::keyPressed(int key){
+
 }
 
 //--------------------------------------------------------------
