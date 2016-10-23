@@ -3,7 +3,7 @@
 #include "../Body.h"
 #include "../ofMain.h"
 #include "../MathVinicius/AffineTransform.h"
-class Cannon;
+#include "Cannon.h"
 
 class Tank : public Body
 {
@@ -17,9 +17,10 @@ public:
 	void setPos(math::Vector2D &pos);
 
 	math::Vector2D getPos();
+	Cannon* _cannon;
 
 private:
 	int _life;
-	Cannon* _cannon;
 	ofImage _sprite;
+	
 };

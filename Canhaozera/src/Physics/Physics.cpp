@@ -5,14 +5,14 @@
 Physics::Physics() {}
 
 void Physics::update() {
-	for each (Body b in _objects)
+	for each (Body* b in _objects)
 	{
-		b.momentum += (_wind / b.getMass() + _gravity) * ofGetLastFrameTime();
+		b->momentum += (_wind / b->getMass() + _gravity) * ofGetLastFrameTime();
 	}
 }
 
 void Physics::setup() {
-	this->_gravity = math::Vector2D(0,-10);
+	this->_gravity = math::Vector2D(0,-100);
 	this->_wind = math::Vector2D(0, 0);
 }
 
