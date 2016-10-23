@@ -1,5 +1,4 @@
 #include "Body.h"
-#include "Transform.h"
 
 Body::Body() :
 	m_transform(nullptr),

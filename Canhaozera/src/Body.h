@@ -3,8 +3,7 @@
 
 #include "MathVinicius/Matrix3.h"
 #include "MathVinicius/Vector2D.h"
-
-class Transform;
+#include "Transform.h"
 
 class Body
 {

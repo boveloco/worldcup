@@ -3,10 +3,12 @@
 #include "../Transform.h"
 
 Tank::Tank(char* src, math::Matrix3 &world) {
+	this->_cannon = new Cannon();
 	this->_sprite.load(src);
 	this->Setup(&world);
 }
 Tank::Tank(char* src, math::Vector2D &pos, math::Matrix3 &world) {
+	this->_cannon = new Cannon();
 	this->_sprite.load(src);
 	this->Setup(&world, pos);
 }
@@ -22,6 +24,8 @@ math::Vector2D Tank::getPos() {
 
 void Tank::Draw() {
 	math::lh::draw(m_transform->tMatrix, _sprite);
+	if(_cannon != nullptr)
+		this->_cannon->Draw();
 }
 
 void Tank::Update() {
