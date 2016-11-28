@@ -12,7 +12,7 @@ public:
 	float angle;
 
 	math::Matrix3 tMatrix;
-	Transform(math::Vector2D pos);
+	Transform(math::Vector2D pos = math::Vector2D(0,0));
 
 	void Update();
 };

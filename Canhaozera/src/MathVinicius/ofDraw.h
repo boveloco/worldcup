@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  *
  * COPYRIGHT Vinicius G. Mendonca ALL RIGHTS RESERVED.
  * Acknowledgments to Ráfagan Abreu for review and support since 2011 (kids grow fast).
@@ -28,16 +28,17 @@
 #include "Matrix3.h"
 #include "Vector2D.h"
 #include "AffineTransform.h"
+#include "BoundingCircle.h"
 
  //OpenFrameworks trabalha com regra da mão esquerda
- inline void __draw(const ofMatrix4x4 matrix, const ofImage& img) {
+inline void __draw(const ofMatrix4x4 matrix, const ofImage& img) {
 	ofPushMatrix();
 	ofMultMatrix(matrix);
 	img.draw(-img.getWidth() / 2.0f, -img.getHeight() / 2.0f);
 	ofPopMatrix();
 }
 
- inline void __drawSubsection(const ofMatrix4x4 matrix, const math::Vector2D& dimensions, const ofImage& img, unsigned int index) {
+inline void __drawSubsection(const ofMatrix4x4 matrix, const math::Vector2D& dimensions, const ofImage& img, unsigned int index) {
 	unsigned int numQuads[2] = {
 		static_cast<unsigned int>(img.getWidth() / dimensions.x),
 		static_cast<unsigned int>(img.getHeight() / dimensions.y)
@@ -56,7 +57,14 @@
 
 namespace math {
 	namespace lh {
-	     inline ofMatrix4x4 newMatrix4x4(const Matrix3& m) {
+		inline Matrix3 flipY(const Matrix3& matrix) {
+			auto m = matrix;
+			m.set(2, 1, -m.get(2, 1));
+			m *= newAffineTranslation(0, ofGetHeight());
+			return m;
+		}
+
+	    inline ofMatrix4x4 newMatrix4x4(const Matrix3& m) {
             ofMatrix4x4 m4x4(
                              m.a(), m.b(), m.c(), 0.0f,
                              m.d(), m.e(), m.f(), 0.0f,
@@ -65,11 +73,11 @@ namespace math {
             return m4x4;
         }
 
-	     inline void draw(const Matrix3& matrix, const ofImage& img) {
+	    inline void draw(const Matrix3& matrix, const ofImage& img) {
             __draw(newMatrix4x4(matrix), img);
         }
 
-		 inline void draw(const Matrix3& matrix, const ofImage& img, const Vector2D& dimensions, unsigned int index) {
+		inline void draw(const Matrix3& matrix, const ofImage& img, const Vector2D& dimensions, unsigned int index) {
 			__drawSubsection(newMatrix4x4(matrix), dimensions, img, index);
 		}
     }
@@ -105,5 +113,35 @@ namespace math {
 		}
     }
 }
+
+//class ofAABB_DrawHelper : public math::IAABB_DrawHelper
+//{
+//public:
+//	void draw(const math::AABB& box, bool invertY = true) const override {
+//		ofNoFill();
+//		ofDrawRectangle(
+//			box.position.x, 
+//			invertY ? (ofGetHeight() - box.position.y - box.size.y) : box.position.y, 
+//			box.size.x, box.size.y);
+//		ofFill();
+//	};
+//	
+//	~ofAABB_DrawHelper() override {};
+//};
+//
+//class ofBC_DrawHelper : public math::IBoundingCircleDrawHelper
+//{
+//public:
+//	void draw(const math::BoundingCircle& circle, bool invertY = true) const override {
+//		ofNoFill();
+//		ofDrawCircle(
+//			circle.position.x,
+//			invertY ? (ofGetHeight() - circle.position.y) : circle.position.y,
+//			circle.radius);
+//		ofFill();
+//	};
+//
+//	~ofBC_DrawHelper() override {};
+//};
 
 #endif //__OF_DRAW_H__

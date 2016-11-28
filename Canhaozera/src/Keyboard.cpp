@@ -30,14 +30,12 @@ void Keyboard::Set(int key, bool action)
 {
 	if (action)
 	{
-		downKeys[tolower(key)] = true;
-		pressedKeys[tolower(key)] = true;
-		releasedKeys.erase(tolower(key));
+		downKeys[tolower(key)] = action;
+		pressedKeys[tolower(key)] = action;
 	}
 	else
 	{
 		releasedKeys[tolower(key)] = true;
-		pressedKeys.erase(tolower(key));
 		downKeys.erase(tolower(key));
 	}
 }

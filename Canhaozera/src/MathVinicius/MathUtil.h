@@ -27,10 +27,10 @@
 
 namespace math
 {
-  static const double MATH_PI = 3.14159265358979323846;
+	static const double MATH_PI = 3.14159265358979323846;
 	static const double MATH_PI_OVER_TWO = MATH_PI / 2.0;
-  static const double ONE_DEGREE = 180.0 / MATH_PI;
-  static const double E = 2.7182818284590452354;
+	static const double ONE_DEGREE = 180.0 / MATH_PI;
+	static const double E = 2.7182818284590452354;
 	static const float FLOAT_DELTA = 0.00001f;
 	static const float DOUBLE_DELTA =  0.00000000000001f;
 
@@ -123,9 +123,29 @@ namespace math
    }
 
    template<typename T>
-   T padValue(T &value, T min, T max);
+   T padValue(T &value, T min, T max)
+   {
+	   value = std::min(std::max(value, min), max);
+	   return value;
+   }
    template<typename T>
-   T padValueCyclic(T &value, T min, T max);
+   T padValueCyclic(T &value, T min, T max)
+   {
+	   T minValue = std::min(value, min) * -1;
+	   value += minValue;
+	   min += minValue;
+	   max += minValue;
+	   T delta = max - min;
+
+	   if (value > max)
+		   value -= static_cast<T>(delta * floor(max / delta));
+	   else if (value < min)
+		   value += static_cast<T>(delta * ceil(min / delta));
+
+	   value -= minValue;
+
+	   return value;
+   }
 
    double fastSin(double radians);
 

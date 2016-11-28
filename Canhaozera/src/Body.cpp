@@ -1,5 +1,7 @@
 #include "Body.h"
 #include "Transform.h"
+#include "Physics/Physics.h"
+#include "ofMain.h"
 
 Body::Body() :
 	m_transform(nullptr),
@@ -16,9 +18,14 @@ Body::~Body()
 	}
 }
 
-float Body::GatMass() const
+float Body::GetMass() const
 {
 	return mass;
+}
+
+bool Body::getStatic() const
+{
+	return _static;
 }
 
 Transform *Body::GetTransform() const
@@ -26,20 +33,29 @@ Transform *Body::GetTransform() const
 	return m_transform;
 }
 
-void Body::Setup(math::Matrix3 *world, math::Vector2D &pos, float mass)
+void Body::Setup(math::Matrix3 *world, math::Vector2D &pos, float mass, bool _static)
 {
 	this->m_transform = new Transform(pos);
 	this->world = world;
 
 	this->mass = mass;
+
+	this->_static = _static;
+
+	Physics::_objects.push_back(this);
 }
 
-void Body::Setup(math::Matrix3 *world, float x, float y, float mass)
+void Body::Setup(math::Matrix3 *world, float x, float y, float mass, bool _static)
 {
-	Setup(world, math::Vector2D(x, y), mass);
+	Setup(world, math::Vector2D(x, y), mass, _static);
 }
 
-void Body::SetMomentum(math::Vector2D _momentum)
+void Body::Setup(math::Matrix3 *world) 
 {
-	momentum = _momentum;
+	this->Setup(world, math::Vector2D(0, 0));
+}
+
+void Body::AddForce(math::Vector2D &dir, float mulForce)
+{
+	momentum += (dir / mass) * mulForce * ofGetLastFrameTime();
 }

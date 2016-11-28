@@ -15,7 +15,8 @@ private:
 	int height;
 
 public:
-	Camera();
+	Camera(math::Vector2D &pos, int width, int height, math::Matrix3 *p_world);
+	Camera(float x, float y, int width, int height, math::Matrix3 *p_world);
 	~Camera();
 
 	void Setup(math::Vector2D &pos, int width, int height, math::Matrix3 *p_world);
@@ -24,6 +25,8 @@ public:
 	static Transform *GetTransform();
 	int GetWidth() const;
 	int GetHeight() const;
+
+	math::Vector2D getPos();
 
 	void Update(float x, float y);
 	void Update(math::Vector2D &pos);

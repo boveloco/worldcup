@@ -4,9 +4,17 @@
 
 Transform *Camera::m_transform = new Transform(math::Vector2D(0, 0));
 
-Camera::Camera() : 
+Camera::Camera(math::Vector2D &pos, int width, int height, math::Matrix3 *p_world) :
 		world(nullptr)
-{}
+{
+	Setup(pos, width, height, p_world);
+}
+
+Camera::Camera(float x, float y, int width, int height, math::Matrix3 *p_world) :
+		world(nullptr)
+{
+	Setup(x, y, width, height, p_world);
+}
 
 Camera::~Camera()
 {
@@ -17,14 +25,14 @@ Camera::~Camera()
 void Camera::Setup(math::Vector2D &p_pos, int p_width, int p_height, math::Matrix3 *p_world)
 {
 	m_transform->position = p_pos;
-	width = (float)p_width/2;
-	height = (float)p_height/2;
+	width = p_width;
+	height = p_height;
 
 	world = p_world;
 
 	m_transform->tMatrix = math::Matrix3(1, 0, 0,
 										 0, 1, 0,
-										 0, 0, 1);
+										 p_pos.x, p_pos.y, 1);
 }
 
 void Camera::Setup(float p_x, float p_y, int p_width, int p_height, math::Matrix3 *p_world)
@@ -39,13 +47,19 @@ Transform *Camera::GetTransform()
 
 int Camera::GetWidth() const
 {
-	return width * 2;
+	return width;
 }
 
 int Camera::GetHeight() const
 {
-	return height * 2;
+	return height;
 }
+
+math::Vector2D Camera::getPos()
+{
+	return m_transform->position;
+}
+
 
 void Camera::Update(float x, float y)
 {
@@ -55,6 +69,6 @@ void Camera::Update(float x, float y)
 void Camera::Update(math::Vector2D &pos)
 {
 	//m_transform->position = pos;
-	m_transform->position =  math::lerp(m_transform->position, pos, 1.f);
+	m_transform->position =  math::lerp(m_transform->position, pos, 0.01f);
 	m_transform->tMatrix = math::lh::newAffineTranslation(m_transform->position);
 }
