@@ -20,13 +20,14 @@
  *
  ******************************************************************************/
 
+
+#ifndef __OF_DRAW_H__
+#define __OF_DRAW_H__
+
 #include "ofMain.h"
 #include "Matrix3.h"
 #include "Vector2D.h"
 #include "AffineTransform.h"
-
-#ifndef __OF_DRAW_H__
-#define __OF_DRAW_H__
 
  //OpenFrameworks trabalha com regra da mão esquerda
  inline void __draw(const ofMatrix4x4 matrix, const ofImage& img) {

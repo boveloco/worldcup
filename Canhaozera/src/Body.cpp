@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "Transform.h"
 
 Body::Body() :
 	m_transform(nullptr),
@@ -15,7 +16,7 @@ Body::~Body()
 	}
 }
 
-float Body::getMass() const
+float Body::GatMass() const
 {
 	return mass;
 }
@@ -37,6 +38,8 @@ void Body::Setup(math::Matrix3 *world, float x, float y, float mass)
 {
 	Setup(world, math::Vector2D(x, y), mass);
 }
-void Body::Setup(math::Matrix3 *world) {
-	this->Setup(world, math::Vector2D(0, 0));
+
+void Body::SetMomentum(math::Vector2D _momentum)
+{
+	momentum = _momentum;
 }
