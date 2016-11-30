@@ -9,7 +9,7 @@ Ground::Ground(char *src, math::Vector2D &pos, math::Matrix3 *world) :
 	m_sprite.load(src);
 	m_rect = new math::AABB(0, 0, m_sprite.getWidth(), m_sprite.getHeight());
 	m_frame = 0;
-	m_frames.push_back(1);
+	m_frames.push_back(0);
 	function<bool(ofVec4f)> isColorKey = [](ofVec4f color) -> bool { return color.x == 0 && color.y == 0 && color.z == 0; };
 	m_mask = new Bitmask(m_sprite, *m_rect, &m_rect->size, &m_frames, &m_frame, isColorKey);
 }
@@ -26,7 +26,7 @@ Transform *Ground::GetTransform() const
 	return m_transform;
 }
 
-math::AABB *Ground::GetRect() const
+math::AABB *Ground::GetShape() const
 {
 	return m_rect;
 }
@@ -47,6 +47,8 @@ void Ground::Update()
 
 void Ground::Draw()
 {
+	// ofDrawRectangle(m_rect->position.x, m_rect->position.y, m_rect->size.x, m_rect->size.x);
 	auto mat = m_transform->tMatrix * math::inverse(Camera::GetTransform()->tMatrix);
 	math::lh::draw(mat, m_sprite);
+
 }

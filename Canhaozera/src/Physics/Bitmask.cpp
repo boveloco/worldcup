@@ -5,7 +5,7 @@ using namespace math;
 
 function<bool(ofVec4f)> Bitmask::defaultColorKey()
 {
-	return [](ofVec4f colorKey) -> bool {
+	return [](ofVec4f colorKey)->bool {
 		return colorKey.w == 0;
 	};
 }
@@ -50,7 +50,7 @@ Bitmask::Bitmask(
 	isColorKey = _isColorKey ? _isColorKey : defaultColorKey();
 }
 
-bool Bitmask::testCollision(const Bitmask& other) const
+bool Bitmask::testCollision(Bitmask& other)
 {
 	//AABB intersection region to apply the bitmask check
 	auto region = broadPhaseBox->intersection(*other.broadPhaseBox);
@@ -80,9 +80,9 @@ bool Bitmask::testCollision(const Bitmask& other) const
 
 		Image pixels are read with y inverted, so we need to get a coordinate from top to bottom
 		*/
-		int y1 = image->getHeight() - (dimensions->y * rowFrame1             + i - int(broadPhaseBox->bottom()));
+		int y1 = (dimensions->y * rowFrame1             + i - int(broadPhaseBox->bottom()));
 		padValue(y1, 0, int(image->getHeight()) - 1);
-		int y2 = other.image->getHeight() - (other.dimensions->y * rowFrame2 + i - int(other.broadPhaseBox->bottom()));
+		int y2 = (other.dimensions->y * rowFrame2 + i - int(other.broadPhaseBox->bottom()));
 		padValue(y2, 0, int(other.image->getHeight()) - 1);
 
 		for (auto j = int(region.left()); j <= int(region.right()); j++) {
@@ -102,8 +102,12 @@ bool Bitmask::testCollision(const Bitmask& other) const
 			pixels.setColor(x1, y1, color);*/
 
 			//TODO: Collision detected, but just with one pixel isn't too perfect?
-			if(count > 400)
-				return true;
+			//if(count > 100)
+
+			m_pixel.set(x1, y1);
+			other.m_pixel.set(x2, y2);
+
+			return true;
 		}
 	}
 
@@ -118,6 +122,48 @@ void Bitmask::transform(math::Vector2D _position, float angle, math::Vector2D _s
 	//TODO: Considerar o cálculo de rotação para o Bitmask
 }
 
+math::Vector2D Bitmask::GetPixel() const
+{
+	return m_pixel;
+}
+
+void Bitmask::removeArea(const Bitmask &other)
+{
+	auto region = broadPhaseBox->intersection(*other.broadPhaseBox);
+
+	int rowFrame1 = currentFrameRow();
+	int rowFrame2 = other.currentFrameRow();
+	int colFrame1 = currentFrameCol();
+	int colFrame2 = other.currentFrameCol();
+
+	int count = 0;
+	
+	for (auto i = int(region.bottom()); i <= int(region.top()); i++) {
+		
+		int y1 = image->getHeight() - (dimensions->y * rowFrame1 + i - int(broadPhaseBox->bottom()));
+		padValue(y1, 0, int(image->getHeight()) - 1);
+		int y2 = other.image->getHeight() - (other.dimensions->y * rowFrame2 + i - int(other.broadPhaseBox->bottom()));
+		padValue(y2, 0, int(other.image->getHeight()) - 1);
+
+		for (auto j = int(region.left()); j <= int(region.right()); j++) {
+			int x1 = dimensions->x * colFrame1 + j - int(broadPhaseBox->left());
+			padValue(x1, 0, int(image->getWidth()) - 1);
+			int x2 = other.dimensions->x * colFrame2 + j - int(other.broadPhaseBox->left());
+			padValue(x2, 0, int(other.image->getWidth()) - 1);
+
+			if (isColorKey(pixelColor(x1, y1)) || other.isColorKey(other.pixelColor(x2, y2)))
+				continue;
+
+			auto& pixels = image->getPixels();
+			auto color = pixels.getColor(x1, y1);
+			color.r = color.g = color.b = 0;
+			pixels.setColor(x1, y1, color);
+		}
+	}
+
+	image->update();
+}
+
 void Bitmask::removeArea(math::AABB& region)
 {
 	//TODO: utilizar canal alpha para esconder informações
@@ -126,6 +172,39 @@ void Bitmask::removeArea(math::AABB& region)
 void Bitmask::removeArea(math::BoundingCircle& region)
 {
 	//TODO: utilizar canal alpha para esconder informações
+
+	math::AABB outerBox = math::AABB::outerBoxFromCircle(region);
+
+	int rowFrame = currentFrameRow();
+	int colFrame = currentFrameCol();
+
+	for (auto i = int(outerBox.bottom()); i <= int(outerBox.top()); i++)
+	{
+
+		int y = (dimensions->y * rowFrame + i - int(broadPhaseBox->bottom()));
+		padValue(y, 0, int(image->getHeight()) - 1);
+
+		for (auto j = int(outerBox.left()); j <= int(outerBox.right()); j++)
+		{
+			int x = dimensions->x * colFrame + j - int(broadPhaseBox->left());
+			padValue(x, 0, int(image->getWidth()) - 1);
+
+			auto point = math::Vector2D(x, y);
+
+			if (region.contains(point + broadPhaseBox->position))
+			{
+				auto& pixels = image->getPixels();
+				auto color = pixels.getColor(x, y);
+				color.r = 0;
+				color.g = 0;
+				color.b = 0;
+				color.a = 1;
+				pixels.setColor(x, y, color);
+			}
+		}
+	}
+
+	image->update();
 }
 
 Bitmask::~Bitmask()

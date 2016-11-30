@@ -10,29 +10,60 @@
 #include "Transform.h"
 #include "BG\Background.h"
 #include "BG\Ground.h"
+#include "Bullets\Explosion.h"
+#include "MathVinicius\MathIncluder.h"
+#include "MathVinicius\ofDraw.h"
 
 void ofApp::CollisionCheck()
 {
-	int index = control + 1 > 1 ? 0 : control + 1;
+	if (ControlOfBullets::bullet)
+	{
+		int index = control + 1 > 1 ? 0 : control + 1;
 
-	if (Physics::BoxCollisionCheck(*_tanks[index]->GetShape(), *ControlOfBullets::bullet->GetShape()))
-	{
-		_tanks[index]->SetLife(_tanks[index]->GetLife() - ControlOfBullets::bullet->GetMass()/10.0f);
-		delete ControlOfBullets::bullet;
-		ControlOfBullets::bullet = nullptr;
-		control++;
-		control = (control > 1) ? 0 : control;
-		physics->_objects.erase(physics->_objects.begin() + 4);
-		posCam = (_tanks[control]->getTag() == "Player") ? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
+		if (Physics::BoxCollisionCheck(*m_tanks[index]->GetShape(), *ControlOfBullets::bullet->GetShape()))
+		{
+			m_tanks[index]->SetLife(m_tanks[index]->GetLife() - ControlOfBullets::bullet->GetMass() / 10.0f);
+			explosion->Reset(ControlOfBullets::bullet->GetPos());
+			delete ControlOfBullets::bullet;
+			ControlOfBullets::bullet = nullptr;
+			control++;
+			control = (control > 1) ? 0 : control;
+			physics->_objects.erase(physics->_objects.begin() + 4);
+			posCam = (m_tanks[control]->getTag() == "Player") ? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
+
+			int r = (rand() % 4 + 1);
+			if (r % 2 == 0)
+			{
+				wDir *= -1.f;
+			}
+		}
+		else if (Physics::BoxCollisionCheck(*ground->GetShape(), *ControlOfBullets::bullet->GetShape()))
+		{
+			if (ground->GetMask()->testCollision(*ControlOfBullets::bullet->GetMask()))
+			{
+				explosion->Reset(ControlOfBullets::bullet->GetPos());
+				delete ControlOfBullets::bullet;
+				ControlOfBullets::bullet = nullptr;
+				control++;
+				control = (control > 1) ? 0 : control;
+				physics->_objects.erase(physics->_objects.begin() + 4);
+				posCam = (m_tanks[control]->getTag() == "Player") ? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
+
+				int r = (rand() % 4 + 1);
+				if (r % 2 == 0)
+				{
+					wDir *= -1.f;
+				}
+			}
+		}
 	}
-	if(ControlOfBullets::bullet->GetMask()->testCollision(*ground->GetMask()))
+
+	if (explosion->IsLive())
 	{
-		delete ControlOfBullets::bullet;
-		ControlOfBullets::bullet = nullptr;
-		control++;
-		control = (control > 1) ? 0 : control;
-		physics->_objects.erase(physics->_objects.begin() + 4);
-		posCam = (_tanks[control]->getTag() == "Player") ? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
+		math::Vector2D aux = ground->GetShape()->position + ground->GetMask()->GetPixel();
+		math::BoundingCircle b = math::BoundingCircle(aux, explosion->m_sprite.getHeight() / 3);
+
+		ground->GetMask()->removeArea(b);
 	}
 }
 
@@ -44,14 +75,16 @@ ofApp::~ofApp()
 	physics = nullptr;
 	delete bg;
 	bg = nullptr;
+	delete explosion;
+	explosion = nullptr;
 
-	for (Tank *t : _tanks)
+	for (Tank *t : m_tanks)
 	{
 		delete t;
 		t = nullptr;
 	}
 
-	_tanks.clear();
+	m_tanks.clear();
 }
 
 //--------------------------------------------------------------
@@ -64,38 +97,45 @@ void ofApp::setup(){
 
 	physics = new Physics();
 	physics->setGravity(math::Vector2D(0, 20));
-	physics->setWind(math::Vector2D(-2, 0));
+	physics->setWind(math::Vector2D(-3, 0));
 
 	_world = math::Matrix3(1, 0, 0,
 						   0, 1, 0,
 						   ofGetWidth() / 2, ofGetHeight() / 2, 1);
 
-	bg = new Background("deserto.png", math::Vector2D(0, 0), &_world);
+	//bg = new Background("deserto.png", math::Vector2D(0, 0), &_world);
 
-	ground = new Ground("Ground2.png", math::Vector2D(518, ofGetHeight()/2), &_world);
+	ground = new Ground("ground.png", math::Vector2D(518, ofGetHeight()/2), &_world);
 
-	_tanks.push_back(new Tank("tank.png", math::Vector2D(-400, 220), _world, "Player"));
-	_tanks.push_back(new Tank("tank.png", math::Vector2D(ofGetWidth() + 400, 220), _world, "Player2"));
+	m_tanks.push_back(new Tank("tank.png", math::Vector2D(-400, 260), _world, "Player"));
+	m_tanks.push_back(new Tank("tank.png", math::Vector2D(ofGetWidth() + 400, 220), _world, "Player2"));
+
+	explosion = new Explosion("Exp.png", math::Vector2D(512, 300));
 
 	control = rand() % 2;
 
-	posCam = (_tanks[control]->getTag() == "Player") ? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
+	posCam = (m_tanks[control]->getTag() == "Player") ? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
 	camera = new Camera(posCam, (float)ofGetWidth(), (float)ofGetHeight(), &_world);
+
+	wDirection.load("direção.png");
+	wTransform = new Transform(math::Vector2D(ofGetWidth() / 2, 100));
+	wDir = 1;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	physics->update();
-	bg->Update();
+	physics->setWind(physics->getWind() * wDir);
+	//bg->Update();
 	ground->Update();
 
-	if (_tanks[control]->shoot)
+	if (m_tanks[control]->shoot)
 	{
-		if (_tanks[control]->getTag() == "Player2")
+		if (m_tanks[control]->getTag() == "Player2")
 			dist.x = ControlOfBullets::bullet->GetPos().x - ofGetWidth();
 		else
 			dist.x = 0;
-		_tanks[control]->shoot = false;
+		m_tanks[control]->shoot = false;
 	}
 	if (ControlOfBullets::bullet)
 	{
@@ -109,7 +149,12 @@ void ofApp::update(){
 			physics->_objects.erase(physics->_objects.begin() + 4);
 			control++;
 			control = (control > 1) ? 0 : control;
-			posCam = (_tanks[control]->getTag() == "Player")? math::Vector2D() : math::Vector2D(ofGetWidth(), 0); 
+			posCam = (m_tanks[control]->getTag() == "Player")? math::Vector2D() : math::Vector2D(ofGetWidth(), 0);
+			int r = (rand() % 4 + 1);
+			if (r % 2 == 0)
+			{
+				wDir *= -1.f;
+			}
 		}
 
 	}
@@ -117,31 +162,42 @@ void ofApp::update(){
 	camera->Update(posCam.x, 0.f);
 	camera->GetTransform()->position.x = (camera->getPos().x < 1)? 0 : (camera->getPos().x > ofGetWidth() - 1) ? ofGetWidth() : camera->getPos().x;
 
-	_tanks[control]->ToRotate();
-	_tanks[control]->ToShoot();
+	m_tanks[control]->ToRotate();
+	m_tanks[control]->ToShoot();
 
-	for each (Tank *t in _tanks)
+	for each (Tank *t in m_tanks)
 	{	
 		t->Update();
 	}
 
-	if (ControlOfBullets::bullet)
-	{
-		CollisionCheck();
-	}
+	CollisionCheck();
+
+	explosion->Update();
+
+	wTransform->scale.set(wDir, 1.f);
+	wTransform->Update();
 
 	Keyboard::GetInstance()->Update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	bg->Draw();
+	//bg->Draw();
 	ground->Draw();
 
-	for each (Tank *t in _tanks)
+	for each (Tank *t in m_tanks)
 	{
 		t->Draw();
 	}
+
+	string text = "";
+	text += ofToString("WIND");
+	ofSetColor(0, 0, 0);
+	ofDrawBitmapString(text, ofGetWidth() / 2 - 15, 70);
+
+	ofSetColor(255, 255, 255);
+	explosion->Draw();
+	math::lh::draw(wTransform->tMatrix, wDirection);
 }
 
 //--------------------------------------------------------------

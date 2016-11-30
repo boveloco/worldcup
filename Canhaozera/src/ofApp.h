@@ -10,6 +10,8 @@ class Physics;
 class Background;
 class Bullet;
 class Ground;
+class Explosion;
+class Transform;
 
 class ofApp : public ofBaseApp{
 	private:
@@ -17,12 +19,18 @@ class ofApp : public ofBaseApp{
 		Physics *physics;
 		Background *bg;
 		Ground *ground;
+		Explosion *explosion;
 
 		math::Vector2D posCam;
 		math::Vector2D dist;
 		int control;
 
 		void CollisionCheck();
+
+		ofImage wDirection;
+		float wDir;
+		Transform *wTransform;
+
 	public:
 		~ofApp();
 		void setup();
@@ -41,6 +49,6 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		std::vector<Tank*> _tanks;
+		std::vector<Tank*> m_tanks;
 		math::Matrix3 _world;
 };

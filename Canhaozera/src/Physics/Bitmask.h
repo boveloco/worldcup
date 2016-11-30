@@ -18,6 +18,9 @@ class Bitmask
 	ofVec4f pixelColor(int x, int y) const;
 	unsigned int currentFrameRow() const;
 	unsigned int currentFrameCol() const;
+
+	math::Vector2D m_pixel;
+
 public:
 	explicit Bitmask();
 	explicit Bitmask(
@@ -28,9 +31,12 @@ public:
 		unsigned int* frame = nullptr, 
 		function<bool(ofVec4f)> isColorKey = nullptr);
 
-	bool testCollision(const Bitmask& other) const;
+	bool testCollision(Bitmask& other);
 	void transform(math::Vector2D position, float angle, math::Vector2D size, bool centered);
 
+	math::Vector2D GetPixel() const;
+
+	void removeArea(const Bitmask& other);
 	void removeArea(math::AABB& region);
 	void removeArea(math::BoundingCircle& region);
 

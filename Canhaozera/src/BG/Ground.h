@@ -12,7 +12,6 @@ class Transform;
 class Ground 
 {
 private:
-	ofImage m_sprite;
 	Transform *m_transform;
 	math::AABB *m_rect;
 	Bitmask *m_mask;
@@ -21,11 +20,12 @@ private:
 	std::vector<unsigned int> m_frames;
 	unsigned int m_frame;
 public:
+	ofImage m_sprite;
 	Ground(char *src, math::Vector2D &pos, math::Matrix3 *world);
 	~Ground();
 
 	Transform *GetTransform() const;
-	math::AABB *GetRect() const;
+	math::AABB *GetShape() const;
 	Bitmask *GetMask() const;
 
 	void Update();

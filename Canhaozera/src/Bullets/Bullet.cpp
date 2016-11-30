@@ -13,8 +13,9 @@ Bullet::Bullet(char *src, math::Vector2D &pos, math::Vector2D &dir,
 
 	m_rect = new math::AABB(0, 0, m_sprite.getWidth(), m_sprite.getHeight());
 	m_frame = 0;
-	m_frames.push_back(1);
-	function<bool(ofVec4f)> isColorKey = [](ofVec4f color) -> bool { return color.y == 255; };
+	m_frames.push_back(0);
+	
+	function<bool(ofVec4f)> isColorKey = [](ofVec4f color)->bool { return color.y == 255; };//[](ofVec4f color) -> bool { return color.x == 255; };
 	m_mask = new Bitmask(m_sprite, *m_rect, &m_rect->size, &m_frames, &m_frame, isColorKey);
 
 	if (dirMove == LEFT)
@@ -26,12 +27,21 @@ Bullet::Bullet(char *src, math::Vector2D &pos, math::Vector2D &dir,
 
 Bullet::~Bullet()
 {
+	delete m_mask;
+	m_mask = nullptr;
+	delete m_rect;
+	m_rect = nullptr;
 }
 
 void Bullet::Update()
 {
 	m_transform->position += momentum * ofGetLastFrameTime();
 	m_transform->Update();
+
+	// faz a rotação apenas do missel mas todas as balas são um tipo só, daí rotaciona todos os tipos.
+	/*auto aux = math::normalize(momentum);
+	float angle = atan2(aux.y, aux.x);
+	m_transform->angle = -math::toDegrees(angle);*/
 	//m_transform->tMatrix *= math::inverse(Camera::GetTransform()->tMatrix);
 
 	auto pos = math::lh::transform(m_transform->tMatrix * math::inverse(Camera::GetTransform()->tMatrix), math::Vector2D());
@@ -40,6 +50,7 @@ void Bullet::Update()
 
 void Bullet::Draw()
 {
+	//ofDrawRectangle(m_rect->position.x, m_rect->position.y, m_rect->size.x, m_rect->size.x);
 	auto mat =  math::inverse(Camera::GetTransform()->tMatrix) * m_transform->tMatrix ;
 	math::lh::draw(mat, m_sprite);
 }

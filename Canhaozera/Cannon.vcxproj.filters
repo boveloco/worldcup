@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\ofApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\Body.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Keyboard.cpp" />
+    <ClCompile Include="src\Tank\Cannon.cpp" />
+    <ClCompile Include="src\Tank\Tank.cpp" />
+    <ClCompile Include="src\Physics\Bitmask.cpp" />
+    <ClCompile Include="src\Physics\Physics.cpp" />
+    <ClCompile Include="src\MathVinicius\AABB.cpp" />
+    <ClCompile Include="src\MathVinicius\AffineTransform.cpp" />
+    <ClCompile Include="src\MathVinicius\BoundingCircle.cpp" />
+    <ClCompile Include="src\MathVinicius\MathUtil.cpp" />
+    <ClCompile Include="src\MathVinicius\Matrix3.cpp" />
+    <ClCompile Include="src\MathVinicius\Source.cpp" />
+    <ClCompile Include="src\MathVinicius\Vector2D.cpp" />
+    <ClCompile Include="src\MathVinicius\Vector3D.cpp" />
+    <ClCompile Include="src\Bullets\Bullet.cpp" />
+    <ClCompile Include="src\Bullets\ControlOfBullets.cpp" />
+    <ClCompile Include="src\Bullets\Explosion.cpp" />
+    <ClCompile Include="src\BG\Background.cpp" />
+    <ClCompile Include="src\BG\Ground.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{d8376475-7454-4a24-b08a-aac121d3ad6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons">
+      <UniqueIdentifier>{4ae78f4f-ce27-4275-9eca-fba5df4a9f41}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ofApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\TurnControl.h" />
+    <ClInclude Include="src\Body.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Keyboard.h" />
+    <ClInclude Include="src\Tank\Cannon.h" />
+    <ClInclude Include="src\Tank\Tank.h" />
+    <ClInclude Include="src\Physics\Bitmask.h" />
+    <ClInclude Include="src\Physics\Physics.h" />
+    <ClInclude Include="src\MathVinicius\AABB.h" />
+    <ClInclude Include="src\MathVinicius\AffineTransform.h" />
+    <ClInclude Include="src\MathVinicius\BoundingCircle.h" />
+    <ClInclude Include="src\MathVinicius\MathIncluder.h" />
+    <ClInclude Include="src\MathVinicius\MathUtil.h" />
+    <ClInclude Include="src\MathVinicius\Matrix3.h" />
+    <ClInclude Include="src\MathVinicius\ofDraw.h" />
+    <ClInclude Include="src\MathVinicius\Vector2D.h" />
+    <ClInclude Include="src\MathVinicius\Vector3D.h" />
+    <ClInclude Include="src\Bullets\Bullet.h" />
+    <ClInclude Include="src\Bullets\ControlOfBullets.h" />
+    <ClInclude Include="src\Bullets\Explosion.h" />
+    <ClInclude Include="src\BG\Background.h" />
+    <ClInclude Include="src\BG\Ground.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bin\data\bala1.png" />
+    <Image Include="bin\data\bala2.png" />
+    <Image Include="bin\data\bala3.png" />
+    <Image Include="bin\data\bar_força.png" />
+    <Image Include="bin\data\barra_1.png" />
+    <Image Include="bin\data\barra_2.png" />
+    <Image Include="bin\data\cannon.png" />
+    <Image Include="bin\data\deserto.png" />
+    <Image Include="bin\data\direção.png" />
+    <Image Include="bin\data\Exp.png" />
+    <Image Include="bin\data\ground.png" />
+    <Image Include="bin\data\tank.png" />
+  </ItemGroup>
+</Project>

@@ -13,7 +13,6 @@ enum Dir {LEFT, RIGHT};
 class Bullet : public Body
 {
 private:
-	ofImage m_sprite;
 	Dir dir;
 	bool alive;
 
@@ -23,6 +22,7 @@ private:
 	std::vector<unsigned int> m_frames;
 	unsigned int m_frame;
 public:
+	ofImage m_sprite;
 	Bullet(char *src, math::Vector2D &pos, math::Vector2D &dir,
 		   float angle, float mass, float speed, Dir dirMove);
 	~Bullet();
